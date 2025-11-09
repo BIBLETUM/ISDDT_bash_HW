@@ -33,16 +33,12 @@ if [[ -z "$DIR" || ! -d "$DIR" ]]; then
   exit 2
 fi
 
-shopt -s dotglob nullglob
-
 declare -A CNT
-declare -a NOSUF_FILES=()
 
 get_suffix() {
   local base=$1
   local prefix="${base%.*}"
   local tail="${base##*.}"
-
   if [[ "$tail" == "$base" ]]; then echo ""; return; fi
   if [[ -z "$tail" ]]; then echo ""; return; fi
   if [[ -z "$prefix" && "$base" == .* ]]; then echo ""; return; fi
@@ -54,11 +50,6 @@ while IFS= read -r -d '' path; do
   suf=$(get_suffix "$base")
   if [[ -z "$suf" ]]; then
     (( CNT["no suffix"]++ )) || true
-    if abs=$(realpath -- "$path" 2>/dev/null); then
-      NOSUF_FILES+=("$abs")
-    else
-      NOSUF_FILES+=("$path")
-    fi
   else
     (( CNT["$suf"]++ )) || true
   fi
